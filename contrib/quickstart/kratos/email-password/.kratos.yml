@@ -1,18 +1,21 @@
 selfservice:
   strategies:
-    password:
+    oidc:
       enabled: true
+      config:
+        providers:
+        - id: github
+          provider: github
+          client_id: ...
+          client_secret: ...
+          mapper_url: file:///etc/config/kratos/oidc.github.jsonnet
+          scope:
+          - user:email
+          - read:user
+
 
   settings:
     privileged_session_max_age: 1m
-    after:
-      profile:
-        hooks:
-          -
-            hook: verify
-
-  verify:
-    return_to: http://127.0.0.1:4455/
 
   logout:
     redirect_to: http://127.0.0.1:4455/auth/login
@@ -27,8 +30,10 @@ selfservice:
         hooks:
           -
             hook: session
+      oidc:
+        hooks:
           -
-            hook: verify
+            hook: session
 
 log:
   level: debug
@@ -50,7 +55,7 @@ urls:
   self:
     public: http://127.0.0.1:4455/.ory/kratos/public/
     admin: http://kratos:4434/
-  default_return_to: http://127.0.0.1:4455/
+  default_return_to: http://127.0.0.1:4455/dashboard
   whitelisted_return_to_urls:
     - http://127.0.0.1:4455
 
